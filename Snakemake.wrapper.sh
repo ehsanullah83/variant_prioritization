@@ -1,11 +1,14 @@
 #!/bin/bash
+#SBATCH --gres=lscratch:100
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32g
 
 # to run snakemake as batch job
 # run in the data folder for this project
 # $2 - --notemp --dryrun --unlock
 # $3 non-default json file
 
-module load snakemake/5.7.4 || exit 1
+module load snakemake/5.24.1 || exit 1
 
 cp /data/OGL/resources/variant_prioritization.git.log .
 mkdir -p 00log
