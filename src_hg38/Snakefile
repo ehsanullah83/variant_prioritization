@@ -1006,8 +1006,8 @@ rule merge_sample_vcf:
 		if [[ $(module list 2>&1 | grep "samtools" | wc -l) < 1 ]]; then module load {config[samtools_version]}; fi
 		bcftools concat --threads {threads} -a --rm-dups none {input.vcf} -Oz -o {wildcards.sample}.{config[anno_version]}.vcf.gz
 		tabix --threads {threads} -f -p vcf {wildcards.sample}.{config[anno_version]}.vcf.gz
-		#bcftools view --threads {threads} -i 'ID~"vg"' {wildcards.sample}.{config[anno_version]}.vcf.gz -Oz -o {wildcards.sample}.{config[anno_version]}.dvg.vcf.gz
-		#tabix -@ {threads} -f -p vcf {wildcards.sample}.{config[anno_version]}.dvg.vcf.gz
+		bcftools view --threads {threads} -i 'ID~"vg"' {wildcards.sample}.{config[anno_version]}.vcf.gz -Oz -o {wildcards.sample}.{config[anno_version]}.dvg.vcf.gz
+		tabix -@ {threads} -f -p vcf {wildcards.sample}.{config[anno_version]}.dvg.vcf.gz
 		touch {output}
 		"""
 rule merge_spliceai_vcf:

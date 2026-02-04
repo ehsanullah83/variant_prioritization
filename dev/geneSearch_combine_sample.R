@@ -49,7 +49,7 @@ OGLanno_count <- cbind(OGLanno_count, df_fisher) %>%
          OR = as.numeric(as.character(OR))) 
 
 filtered <- OGLanno_count %>% filter(priority_score >=5 , 
-                                     caller %in% c("dvFb", "fbDvg","fbDv"))  
+                                     caller %in% c("dvFb", "fbDvg","fbDv", "clr3g"))  
 recessive_count <- select(filtered, c(sample, temp_zygosity, AlleleCount)) %>% 
   group_by(sample) %>% summarize(recessive_cnt = sum(temp_zygosity), maxAC = max(AlleleCount)) 
 
