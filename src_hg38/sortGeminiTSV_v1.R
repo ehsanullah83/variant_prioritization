@@ -395,10 +395,10 @@ if (scramble_del_file == "filePlaceholder") {
   scramble_del_sort <- data.frame("sample" = sampleName, "note" = "Empty scramble del")
 } else {
   scramble_del <- read_tsv(scramble_del_file, col_names = TRUE, na = c("NA", "", "None", "NONE", "."), col_types = cols(.default = col_character())) %>%
-    filter( is.na(Gene_name) | Annotation_mode == 'split' & !is.na(Gene_name) ) %>%
-    filter(is.na(CohortFreq) | CohortFreq < 0.025) %>% 
     mutate(ACMG_class = sub("full=", "", ACMG_class)) %>% 
     type_convert() %>% 
+    filter( is.na(Gene_name) | Annotation_mode == 'split' & !is.na(Gene_name) ) %>%
+    filter(is.na(CohortFreq) | CohortFreq < 0.025) %>% 
     mutate(ACMG_class = case_when(SV_type == "DEL" & !is.na(B_loss_source) ~ ACMG_class - 2,
                                   SV_type == "DUP" & !is.na(B_gain_source) ~ ACMG_class - 1,
                                   TRUE ~ ACMG_class )) %>% 
