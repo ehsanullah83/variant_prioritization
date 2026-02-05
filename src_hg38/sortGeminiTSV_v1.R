@@ -438,14 +438,20 @@ gemini_filtered <- gemini_filtered %>%
                                    ref_gene %in% c("CNGA1", "CNGB1") ~ "CNGA1-CNGB1",
                                    TRUE ~ ref_gene)) # digenic recessive
 
-gemini_filtered1 <- gemini_filtered %>% filter(priority_score >= 5) %>% # changed from score of 3 to 5 on 9/11/2025 
+gemini_filtered1 <- gemini_filtered %>% filter( priority_score >= 5 | 
+                                                (priority_score >= 3 & (clinvar_hgmd_score >= 3 | splice_score >= 6 | insilico_score >= 3))
+                                              ) %>% # changed from score of 3 to 5 on 9/11/2025 
   select(-maxpriorityscore) %>% 
   arrange(desc(eyeGene), desc(priority_score)) #this goes to "all" sheet after noting clinSV genes later.
   
-gemini_filtered2 <- gemini_filtered %>% filter(priority_score >= 5) # changed from score of 4 to 5 on 9/11/2025 
+gemini_filtered2 <- gemini_filtered %>% filter( priority_score >= 5 | 
+                                                (priority_score >= 3 & (clinvar_hgmd_score >= 3 | splice_score >= 6 | insilico_score >= 3))
+) # changed from score of 4 to 5 on 9/11/2025 
 
 recessive_count <- select(gemini_filtered2, c(temp_ref_gene, priority_score, gt_types)) %>%
-  filter(priority_score >= 5.5) %>% select(-priority_score) %>% 
+  filter( priority_score >= 5.5 | 
+          (priority_score >= 3 & (clinvar_hgmd_score >= 3 | splice_score >= 6 | insilico_score >= 3))
+  ) %>% select(-priority_score) %>% 
   group_by(temp_ref_gene) %>% summarize(recessive_cnt = sum(gt_types)) 
 
 eyeGeneList <- read_xlsx(geneCategory_file, sheet = "analysis", na = c("NA", "", "None", ".")) %>% 
