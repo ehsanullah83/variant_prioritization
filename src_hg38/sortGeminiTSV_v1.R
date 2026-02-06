@@ -448,10 +448,10 @@ gemini_filtered2 <- gemini_filtered %>% filter( priority_score >= 5 |
                                                 (priority_score >= 3 & (clinvar_hgmd_score >= 3 | splice_score >= 6 | insilico_score >= 3))
 ) # changed from score of 4 to 5 on 9/11/2025 
 
-recessive_count <- select(gemini_filtered2, c(temp_ref_gene, priority_score, gt_types)) %>%
+recessive_count <- select(gemini_filtered2, c(temp_ref_gene, priority_score, clinvar_hgmd_score, splice_score, insilico_score, gt_types)) %>%
   filter( priority_score >= 5.5 | 
           (priority_score >= 3 & (clinvar_hgmd_score >= 3 | splice_score >= 6 | insilico_score >= 3))
-  ) %>% select(-priority_score) %>% 
+  ) %>% select(temp_ref_gene, gt_types) %>% 
   group_by(temp_ref_gene) %>% summarize(recessive_cnt = sum(gt_types)) 
 
 eyeGeneList <- read_xlsx(geneCategory_file, sheet = "analysis", na = c("NA", "", "None", ".")) %>% 
