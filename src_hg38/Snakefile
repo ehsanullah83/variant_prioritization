@@ -26,9 +26,9 @@ def pick():
 	# modifies VEP call to either pick most canonical tx or
 	# return all tx possibilities
 	if config['pick'].upper() == 'RANK':
-		out = '--pick_allele_gene  --pick_order rank, mane_select, mane_plus_clinical, canonical, tsl, biotype, ccds, length'
+		out = '--pick --pick_order mane_select, mane_plus_clinical, rank, canonical, tsl, biotype, ccds, length --pick_allele_gene'
 	if config['pick'].upper() == 'CANONICAL':
-		out = '--pick_allele_gene  --pick_order canonical, tsl, biotype, ccds, length'
+		out = '--pick --pick_order canonical, tsl, biotype, ccds, length --pick_allele_gene'
 	if config['pick'].upper() == 'ALL':
 		out = '--flag_pick_allele_gene '
 	if config['pick'].upper() == 'PICK':
