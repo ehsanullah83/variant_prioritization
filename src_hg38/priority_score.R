@@ -118,22 +118,21 @@ ps_df <-  left_join(ps_df_crossmap, squirls_pangolin_annotation, by="variantkey"
                                            abs(maxentscan_diff) > 3 ~ 3,
                                            TRUE ~ 0)) %>%
   replace_na(list(max_af=0)) %>%
-  mutate(temp_consequence_score = case_when(
-    consequence %in% c("frameshift_variant", "stop_gained", "splice_donor_variant","splice_acceptor_variant", "start_lost") ~ 6,
-    consequence %in% c("missense_variant", "inframe_deletion", "inframe_insertion", "protein_altering_variant") ~ 5,
-    consequence %in% c("synonymous_variant", "non_coding_transcript_exon_variant") ~ 4,
-    consequence %in% c("5_prime_UTR_variant", "3_prime_UTR_variant", "regulatory_region_variant", "splice_region_variant", ) ~ 3,
-    consequence %in% c("intron_variant", ) ~ 2,
-    consequence %in% c("upstream_gene_variant", "downstream_gene_variant", "TF_binding_site_variant" ) ~ 1,  
-    consequence %in% c("intergenic_variant", ) ~ 0,
-    TRUE ~ 0)) %>% 
+  # mutate(temp_consequence_score = case_when(
+  #   consequence %in% c("frameshift_variant", "stop_gained", "splice_donor_variant","splice_acceptor_variant", "start_lost") ~ 6,
+  #   consequence %in% c("missense_variant", "inframe_deletion", "inframe_insertion", "protein_altering_variant") ~ 5,
+  #   consequence %in% c("synonymous_variant", "non_coding_transcript_exon_variant") ~ 4,
+  #   consequence %in% c("5_prime_UTR_variant", "3_prime_UTR_variant", "regulatory_region_variant", "splice_region_variant", ) ~ 3,
+  #   consequence %in% c("intron_variant", ) ~ 2,
+  #   consequence %in% c("upstream_gene_variant", "downstream_gene_variant", "TF_binding_site_variant" ) ~ 1,  
+  #   consequence %in% c("intergenic_variant", ) ~ 0,
+  #   TRUE ~ 0)) %>% 
   mutate(temp_csq_score = ifelse(grepl("deleterious", sift), 0.5, 0) +
            ifelse(grepl("damaging", polyphen), 0.5, 0) +
            ifelse(is.na(cadd_phred), 0, ifelse(cadd_phred > 15, 0.5, 0) ) +
            temp_genesplicer + temp_maxentscan_diff +
            ifelse(is.na(five_prime_utr_variant_consequence) | max_af > 0.001, 0, 1) +
-           ifelse(is.na(am_class), 0, ifelse(am_class == "likely_pathogenic", 0.5, 0)) +
-           temp_consequence_score) %>% 
+           ifelse(is.na(am_class), 0, ifelse(am_class == "likely_pathogenic", 0.5, 0)) ) %>% 
   group_by(ID) %>% slice(which.max(temp_csq_score)) %>% ungroup() %>% 
   mutate(gno2x_expected_an = case_when(CHROM %in% c("X", "chrX") & gno2x_nonpar == "1" ~ 183653,
                                        CHROM %in% c("Y", "chrY") & gno2x_nonpar == "1" ~ 67843,
