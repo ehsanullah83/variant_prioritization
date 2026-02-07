@@ -153,20 +153,20 @@ gemini_rearrangeCol <- left_join(gemini_max_priority_score, panelGene, by = c("r
   mutate(
     temp_hgvsc = if_else(is.na(hgvsc), NA_character_, str_replace(hgvsc, "^[^:]*:", "")),
     temp_prot  = if_else(is.na(hgvsp), NA_character_, str_replace(hgvsp, "^[^:]*:p.", "")),
-    temp_trscrpt = str_extract(hgvsc, "^[^:]+"),
-    vep_gene = if_else(is.na(temp_trscrpt), gene, str_c(gene, " ", temp_trscrpt, sep = "")),
+    hgvs_trscrpt = str_extract(hgvsc, "^[^:]+"),
+    vep_gene = if_else(is.na(hgvs_trscrpt), gene, str_c(gene, " ", hgvs_trscrpt, sep = "")),
     vep_hgvs = if_else(is.na(temp_prot), temp_hgvsc, str_c(temp_hgvsc, " p.(", temp_prot, ")", sep = "")),
   ) %>%
   mutate(gnomad_af = if_else(is.na(gno2x_af_all) | gno2x_af_all == -1, gno3_af_all, gno2x_af_all)) %>% 
-  select(-temp_hgvsc, -temp_prot, -temp_trscrpt) %>%
+  select(-temp_hgvsc, -temp_prot) %>%
   mutate(zygosity = ifelse(gts == 1, "Heterozygous", ifelse(chrom %in% c("chrX", "X"), "Hemizygous", "Homozygous"))) %>% 
   select('ref_gene','sample','chr_variant_id','hg38_pos', gts,gt_types,gt_alt_freqs, 'aaf', 'caller',
          'panel_class', 'priority_score', 'prscore_intervar', 'clinvar_hgmd_score', 'splice_score', 'insilico_score', 
-         exonicfunc_refgenewithver, mane_select,'refgenewithver',vep_gene,vep_hgvs,zygosity,hgmd_id,clnid,gnomad_af, 'omim_inheritance','omim_phen','hgmd_class',clnsig,clnsigconf,'note', 'exon','aa_length','intron',
+         exonicfunc_refgenewithver, hgvs_trscrpt,'refgenewithver',vep_gene,vep_hgvs,zygosity,hgmd_id,clnid,gnomad_af, 'omim_inheritance','omim_phen','hgmd_class',clnsig,clnsigconf,'note', 'exon','aa_length','intron',
          'gno2e3g_acan', 'gno2e3g_hom',gno2e3g_hemi,'max_af', 'max_af_pops',af_oglx,af_oglg,gno2x_af_all,gno3_af_all,'interpro_domain', 'pfam_domain', 
           'oe_lof_upper_bin','pli','loeuf','mis_z','pnull','prec', 'rmsk', 
          promoterai, 'am_pathogenicity','am_class','spliceai','spliceai_maxscore','spliceaimasked50','spliceaimasked50max',
-         'grch37variant_id','qual',gt_depths,gt_quals,gno2x_filter,gno3_filter,func_refgenewithver,'gene','hgvsc','hgvsp','omim_gene', 'hgmd_phen', hgmd_overlap4aa, 'existing_variation', clnalleleid,'clin_sig', clnrevstat, clndn, clndisdb, 
+         'grch37variant_id','qual',gt_depths,gt_quals,gno2x_filter,gno3_filter,func_refgenewithver,'gene',mane_select,'hgvsc','hgvsp','omim_gene', 'hgmd_phen', hgmd_overlap4aa, 'existing_variation', clnalleleid,'clin_sig', clnrevstat, clndn, clndisdb, 
          intervar_and_evidence, 'pvs1', 'truncating_vep', 'gno2e3g_af','pmaxaf', ac_oglx, ac_hom_oglx, an_oglx, ac_oglg, ac_hom_oglg, an_oglg, 'existing_inframe_oorfs','existing_outofframe_oorfs','existing_uorfs','five_prime_utr_variant_annotation','five_prime_utr_variant_consequence',
          'squirls_interpretation', 'squirls_maxscore', 'squirls_score', 'dbscsnv_ada_score', 'dbscsnv_rf_score', 'regsnp_fpr','regsnp_disease','regsnp_splicing_site','dpsi_max_tissue', 'dpsi_zscore', 'genesplicer', 'maxentscan_diff', 'branchpoint_prob', 'labranchor_score', 'regsnp_fpr','regsnp_disease','regsnp_splicing_site',  
          'sift_pred', 'polyphen_pred', 'mutscore', 'mutationassessor_pred', 'mutationtaster_pred', 'metasvm_pred','metasvm_score', 'clinpred_score', 'primateai_rankscore', 'revel_score', hmc_score, 'ccr_pct','mpc_score', 'mtr_score', 'mtr_fdr', 'mtr_pct', 'cadd_raw', 'cadd_phred','remm', 'fathmm_xf_coding_score','fathmm_xf_noncoding','eigen_pc_raw_coding', 'gerpplus_rs', 'phylop100way_vertebrate', 
@@ -242,20 +242,20 @@ if (nrow(gemini_ref_var_input) == 0) {
     mutate(
       temp_hgvsc = if_else(is.na(hgvsc), NA_character_, str_replace(hgvsc, "^[^:]*:", "")),
       temp_prot  = if_else(is.na(hgvsp), NA_character_, str_replace(hgvsp, "^[^:]*:p.", "")),
-      temp_trscrpt = str_extract(hgvsc, "^[^:]+"),
-      vep_gene = if_else(is.na(temp_trscrpt), gene, str_c(gene, " ", temp_trscrpt, sep = "")),
+      hgvs_trscrpt = str_extract(hgvsc, "^[^:]+"),
+      vep_gene = if_else(is.na(hgvs_trscrpt), gene, str_c(gene, " ", hgvs_trscrpt, sep = "")),
       vep_hgvs = if_else(is.na(temp_prot), temp_hgvsc, str_c(temp_hgvsc, " p.(", temp_prot, ")", sep = "")),
     ) %>%
     mutate(gnomad_af = if_else(is.na(gno2x_af_all) | gno2x_af_all == -1, gno3_af_all, gno2x_af_all)) %>% 
-    select(-temp_hgvsc, -temp_prot, -temp_trscrpt) %>%
-    mutate(zygosity = ifelse(gts == 1, "Heterozygous", ifelse(chrom %in% c("chrX", "X"), "Hemizygous", "Homozygous"))) %>% 
+    select(-temp_hgvsc, -temp_prot) %>%
+    mutate(zygosity = ifelse(gt_types == 1, "Heterozygous", ifelse(chrom %in% c("chrX", "X"), "Hemizygous", "Homozygous"))) %>% 
     select('ref_gene','sample','chr_variant_id','hg38_pos', gts,gt_types,gt_alt_freqs, 'aaf', 'caller',
            'panel_class', 'priority_score', 'prscore_intervar', 'clinvar_hgmd_score', 'splice_score', 'insilico_score', 
-           exonicfunc_refgenewithver, mane_select,'refgenewithver','vep_gene',vep_hgvs,zygosity,hgmd_id,clnid,gnomad_af, 'omim_inheritance','omim_phen','hgmd_class',clnsig,clnsigconf,'note', 'exon','aa_length','intron',
+           exonicfunc_refgenewithver, hgvs_trscrpt,'refgenewithver','vep_gene',vep_hgvs,zygosity,hgmd_id,clnid,gnomad_af, 'omim_inheritance','omim_phen','hgmd_class',clnsig,clnsigconf,'note', 'exon','aa_length','intron',
            'gno2e3g_acan', 'gno2e3g_hom',gno2e3g_hemi,'max_af', 'max_af_pops',af_oglx,af_oglg,gno2x_af_all,gno3_af_all,'interpro_domain', 'pfam_domain', 
            'oe_lof_upper_bin','pli','loeuf','mis_z','pnull','prec', 'rmsk', 
            promoterai, 'am_pathogenicity','am_class','spliceai','spliceai_maxscore','spliceaimasked50','spliceaimasked50max',
-           'grch37variant_id','qual',gt_depths,gt_quals,gno2x_filter,gno3_filter,func_refgenewithver,'gene','hgvsc','hgvsp','omim_gene', 'hgmd_phen', hgmd_overlap4aa, 'existing_variation', clnalleleid,'clin_sig', clnrevstat, clndn, clndisdb, 
+           'grch37variant_id','qual',gt_depths,gt_quals,gno2x_filter,gno3_filter,func_refgenewithver,'gene',mane_select,'hgvsc','hgvsp','omim_gene', 'hgmd_phen', hgmd_overlap4aa, 'existing_variation', clnalleleid,'clin_sig', clnrevstat, clndn, clndisdb, 
            intervar_and_evidence, 'pvs1', 'truncating_vep', 'gno2e3g_af','pmaxaf', ac_oglx, ac_hom_oglx, an_oglx, ac_oglg, ac_hom_oglg, an_oglg, 'existing_inframe_oorfs','existing_outofframe_oorfs','existing_uorfs','five_prime_utr_variant_annotation','five_prime_utr_variant_consequence',
            'squirls_interpretation', 'squirls_maxscore', 'squirls_score', 'dbscsnv_ada_score', 'dbscsnv_rf_score', 'regsnp_fpr','regsnp_disease','regsnp_splicing_site','dpsi_max_tissue', 'dpsi_zscore', 'genesplicer', 'maxentscan_diff', 'branchpoint_prob', 'labranchor_score', 'regsnp_fpr','regsnp_disease','regsnp_splicing_site',  
            'sift_pred', 'polyphen_pred', 'mutscore', 'mutationassessor_pred', 'mutationtaster_pred', 'metasvm_pred','metasvm_score', 'clinpred_score', 'primateai_rankscore', 'revel_score', hmc_score, 'ccr_pct','mpc_score', 'mtr_score', 'mtr_fdr', 'mtr_pct', 'cadd_raw', 'cadd_phred','remm', 'fathmm_xf_coding_score','fathmm_xf_noncoding','eigen_pc_raw_coding', 'gerpplus_rs', 'phylop100way_vertebrate', 

@@ -17,9 +17,11 @@ library(tidyverse)
 
 args <- commandArgs(trailingOnly=TRUE)
 #When testing, use the line below.
-# setwd("Z:/genome/eyeGene_Stargardt/prioritization")
-# args <- c("for.ps.tsv", "squirls.csv",
-#           "pangolin.tsv", "crossmap.hg19.tsv",
+# setwd("Z:/validation/bam_genome/prioritization-clair3g")
+# args <- c("for.ps.tsv", 
+#           "squirls.csv",
+#           "pangolin.tsv",
+#           "crossmap.tsv",
 #           "Z:/resources/gnomad/release-2.1.1/gnomad.v2.1.1.lof_metrics.by_gene.txt",
 #           "NR6A1_nisc__24chr.ps.tsv")
 
@@ -96,6 +98,11 @@ ps_df_crossmap <- left_join(input_df, crossmap, by = "ID")
 
 rm(input_df)
 rm(crossmap)
+
+is_single_aa_repeat <- function(x) {
+  x <- coalesce(x, "")
+  nchar(x) >= 2 & str_detect(x, "^([A-Z])\\1+$")
+}
 
 ##The following line was meant to add 3 to Priority_Score when CSQ fields has truncating and PVS1 == 0 and pmaxaf < 0.01 & Priority_Score_intervar < 6
 ##Empty fields showed as "" for character columns after separate(). Possibly use mutate(across(where(is.character), ~na_if(., "")))
@@ -232,10 +239,11 @@ ps_df <-  left_join(ps_df_crossmap, squirls_pangolin_annotation, by="variantkey"
       temp_nalt),
     temp_inframe_score = case_when(temp_nalt > 10 ~ 8,
                                    temp_nalt > 5 ~ 6,
-                                   temp_nalt > 1 ~ 5
-                                   temp_nalt = 1 ~ 4,
+                                   temp_nalt > 1 ~ 5,
+                                   temp_nalt == 1 & !(is_single_aa_repeat(temp_ref) | is_single_aa_repeat(temp_alt)) ~ 4,
+                                   temp_nalt == 1 & (is_single_aa_repeat(temp_ref) | is_single_aa_repeat(temp_alt)) ~ 3,
                                    TRUE ~ 0)
-  ) %>% 
+  ) %>%  
   mutate(other_modification = ifelse(grepl("protein_altering_variant|inframe", CSQ, ignore.case = TRUE) & pmaxaf < 0.01,  pmax(temp_inframe_score, 3, na.rm = TRUE), 0) +
            ifelse(grepl("non_coding_transcript_exon_variant", CSQ, ignore.case = TRUE) & pmaxaf < 0.001, 3, 0) +
            ifelse(grepl("missense_variant", CSQ, ignore.case = TRUE) & temp_mis_z >= 3.09 & SigmaAF_Missense_0001 < 0.005 & pmaxaf < 0.005 & insilico_score < 4, 2, 0) +
