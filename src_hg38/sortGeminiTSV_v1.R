@@ -153,6 +153,7 @@ gemini_rearrangeCol <- left_join(gemini_max_priority_score, panelGene, by = c("r
   mutate(
     temp_hgvsc = if_else(is.na(hgvsc), NA_character_, str_replace(hgvsc, "^[^:]*:", "")),
     temp_prot  = if_else(is.na(hgvsp), NA_character_, str_replace(hgvsp, "^[^:]*:p.", "")),
+    temp_prot = sub("%3D", "=", temp_prot),
     hgvs_trscrpt = str_extract(hgvsc, "^[^:]+"),
     vep_gene = if_else(is.na(hgvs_trscrpt), gene, str_c(gene, " ", hgvs_trscrpt, sep = "")),
     vep_hgvs = if_else(is.na(temp_prot), temp_hgvsc, str_c(temp_hgvsc, " p.(", temp_prot, ")", sep = "")),
@@ -161,11 +162,10 @@ gemini_rearrangeCol <- left_join(gemini_max_priority_score, panelGene, by = c("r
   select(-temp_hgvsc, -temp_prot, -hgvs_trscrpt) %>%
   #mutate(zygosity = ifelse(gt_types == 1, "Heterozygous", ifelse(chrom %in% c("chrX", "X"), "Hemizygous", "Homozygous"))) %>% 
   select('ref_gene','sample','chr_variant_id',gts,'hgmd_class',clnsig,clnsigconf,'refgenewithver',vep_gene,vep_hgvs,gt_types,hgmd_id,clnid,gnomad_af,'gno2e3g_acan', 'gno2e3g_hom',gno2e3g_hemi,
-         'caller', 'panel_class', 'priority_score', 'prscore_intervar', 'clinvar_hgmd_score', 'splice_score', 'insilico_score', 
-         'omim_inheritance','omim_phen','note',exonicfunc_refgenewithver, 'exon','aa_length','intron',
-         'hg38_pos', 'grch37variant_id',gt_alt_freqs,gt_depths,gt_quals, 'aaf',
-         'max_af', 'max_af_pops',pmaxaf, af_oglx,af_oglg,gno2x_af_all,gno3_af_all,'interpro_domain', 'pfam_domain', 
-          'oe_lof_upper_bin','pli','loeuf','mis_z','pnull','prec', 'rmsk', 
+         'panel_class','caller', 'priority_score', 'prscore_intervar', 'clinvar_hgmd_score', 'splice_score', 'insilico_score', 
+         'omim_inheritance','omim_phen','hg38_pos', 'note','aaf','oe_lof_upper_bin','pli','loeuf','mis_z',exonicfunc_refgenewithver, 'exon','aa_length','intron',
+         'grch37variant_id',gt_alt_freqs,gt_depths,gt_quals, 
+         'max_af', 'max_af_pops',pmaxaf, af_oglx,af_oglg,gno2x_af_all,gno3_af_all,'interpro_domain', 'pfam_domain','pnull','prec', 'rmsk', 
          promoterai, 'am_pathogenicity','am_class','spliceai','spliceai_maxscore','spliceaimasked50','spliceaimasked50max',
          'qual',gno2x_filter,gno3_filter,func_refgenewithver,'gene',mane_select,'hgvsc','hgvsp','omim_gene', 'hgmd_phen', hgmd_overlap4aa, 'existing_variation', clnalleleid,'clin_sig', clnrevstat, clndn, clndisdb, 
          intervar_and_evidence, 'pvs1', 'truncating_vep', 'gno2e3g_af', ac_oglx, ac_hom_oglx, an_oglx, ac_oglg, ac_hom_oglg, an_oglg, 'existing_inframe_oorfs','existing_outofframe_oorfs','existing_uorfs','five_prime_utr_variant_annotation','five_prime_utr_variant_consequence',
@@ -243,6 +243,7 @@ if (nrow(gemini_ref_var_input) == 0) {
     mutate(
       temp_hgvsc = if_else(is.na(hgvsc), NA_character_, str_replace(hgvsc, "^[^:]*:", "")),
       temp_prot  = if_else(is.na(hgvsp), NA_character_, str_replace(hgvsp, "^[^:]*:p.", "")),
+      temp_prot = sub("%3D", "=", temp_prot),
       hgvs_trscrpt = str_extract(hgvsc, "^[^:]+"),
       vep_gene = if_else(is.na(hgvs_trscrpt), gene, str_c(gene, " ", hgvs_trscrpt, sep = "")),
       vep_hgvs = if_else(is.na(temp_prot), temp_hgvsc, str_c(temp_hgvsc, " p.(", temp_prot, ")", sep = "")),
@@ -251,11 +252,10 @@ if (nrow(gemini_ref_var_input) == 0) {
     select(-temp_hgvsc, -temp_prot, -hgvs_trscrpt) %>%
     #mutate(zygosity = ifelse(gt_types == 1, "Heterozygous", ifelse(chrom %in% c("chrX", "X"), "Hemizygous", "Homozygous"))) %>% 
     select('ref_gene','sample','chr_variant_id',gts,'hgmd_class',clnsig,clnsigconf,'refgenewithver',vep_gene,vep_hgvs,gt_types,hgmd_id,clnid,gnomad_af,'gno2e3g_acan', 'gno2e3g_hom',gno2e3g_hemi,
-           'caller', 'panel_class', 'priority_score', 'prscore_intervar', 'clinvar_hgmd_score', 'splice_score', 'insilico_score', 
-           'omim_inheritance','omim_phen','note',exonicfunc_refgenewithver, 'exon','aa_length','intron',
-           'hg38_pos', 'grch37variant_id',gt_alt_freqs,gt_depths,gt_quals, 'aaf',
-           'max_af', 'max_af_pops',pmaxaf, af_oglx,af_oglg,gno2x_af_all,gno3_af_all,'interpro_domain', 'pfam_domain', 
-           'oe_lof_upper_bin','pli','loeuf','mis_z','pnull','prec', 'rmsk', 
+           'panel_class','caller', 'priority_score', 'prscore_intervar', 'clinvar_hgmd_score', 'splice_score', 'insilico_score', 
+           'omim_inheritance','omim_phen','hg38_pos', 'note','aaf','oe_lof_upper_bin','pli','loeuf','mis_z',exonicfunc_refgenewithver, 'exon','aa_length','intron',
+           'grch37variant_id',gt_alt_freqs,gt_depths,gt_quals, 
+           'max_af', 'max_af_pops',pmaxaf, af_oglx,af_oglg,gno2x_af_all,gno3_af_all,'interpro_domain', 'pfam_domain','pnull','prec', 'rmsk', 
            promoterai, 'am_pathogenicity','am_class','spliceai','spliceai_maxscore','spliceaimasked50','spliceaimasked50max',
            'qual',gno2x_filter,gno3_filter,func_refgenewithver,'gene',mane_select,'hgvsc','hgvsp','omim_gene', 'hgmd_phen', hgmd_overlap4aa, 'existing_variation', clnalleleid,'clin_sig', clnrevstat, clndn, clndisdb, 
            intervar_and_evidence, 'pvs1', 'truncating_vep', 'gno2e3g_af', ac_oglx, ac_hom_oglx, an_oglx, ac_oglg, ac_hom_oglg, an_oglg, 'existing_inframe_oorfs','existing_outofframe_oorfs','existing_uorfs','five_prime_utr_variant_annotation','five_prime_utr_variant_consequence',
