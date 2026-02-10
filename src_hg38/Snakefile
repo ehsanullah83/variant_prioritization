@@ -310,7 +310,7 @@ else:
 			 	| sed 's/Number=A/Number=1/g' | bgzip > {output.vcf}
 			tabix -f -p vcf {output.vcf}
 			"""
-#sed 's#0/0:10:10:10,0,#0/0:10:10:10,#g' added on 5/22/2025 to fix an error in the variant_calling step.
+#sed 's#0/0:10:10:10,0,#0/0:10:10:10,#g' added on 5/22/2025 to fix an error in the variant_calling step. Should be deleted now.
 #clinvar in this step by vcfanno
 #slivar annotated
 #INFO=<ID=gnomad_popmax_af,Number=1,Type=Float,Description="field from from gnotate VCF">
@@ -450,10 +450,9 @@ rule squirls:
 		bcftools view --no-header -Ov {input.vcf} | awk -F"\t" 'BEGIN{{OFS=","}} NR==1 {{print "CHROM,POS,REF,ALT"}} NR>1 {{print $1,$2,$4,$5}}' - > {output.barevcf}
 		if [[ $(module list 2>&1 | grep "java" | wc -l) < 1 ]]; then module load java; fi
 		LWORK_DIR=/lscratch/$SLURM_JOB_ID
-		cp -r /data/OGL/resources/squirls-cli-1.0.0/ $LWORK_DIR
-		java -jar $LWORK_DIR/squirls-cli-1.0.0/squirls-cli-1.0.0.jar \
+		java -Djava.io.tmpdir="$LWORK_DIR" -jar /data/OGL/resources/squirls-cli-1.0.0/squirls-cli-1.0.0.jar \
 			annotate-csv \
-			$LWORK_DIR/squirls-cli-1.0.0/squirls-config_hg38.yml \
+			/data/OGL/resources/squirls/squirls-config_hg38.yml \
 			{output.barevcf} {output.squirls_csv}
 		"""
 
