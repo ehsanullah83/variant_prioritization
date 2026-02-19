@@ -193,7 +193,7 @@ elif config['datatype'].upper() in ["EXOME", "WES"]:
 	localrules: priority_scores
 else:
 	localrules: n_split_vcf
-	localrules: crossmap
+	#localrules: crossmap
 	localrules: bcftools_norm
 	# localrules: priority_scores
 

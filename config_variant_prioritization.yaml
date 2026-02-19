@@ -1,4 +1,4 @@
-input_vcf: 'test_trio.vcf.gz' #bcf also accepted. A vcf file is needed for deriving batch_anme, even staring with GEMINI_db
+input_vcf: 'test_trio.vcf.gz' #bcf also accepted. ID cannot be empty and has to be unique. A vcf file is needed for deriving batch_anme, even staring with GEMINI_db
 input_geminiDB: 'gemini/example.gemini.db' #cannot be in the working directory, needs to be in the same drive due to "cp -l" linking
 input_type: 'vcf' #vcf/annotatedVcf/geminiDB, case insensitive. annotatedVcf: delete "vcf" and "individual_query" in output_type below; geminidb: delete "vcf" in output_type below
 datatype: 'genome' #panel, exome, genome, blank
