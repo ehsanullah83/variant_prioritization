@@ -523,7 +523,11 @@ if ( clinsv_file == "filePlaceholder") {
   clinsv$eyeGene <- sapply(1:nrow(clinsv), function(x) {selectGene(clinsv[x, "Genes"], eyeGeneList)})
   clinsv <- select(clinsv, Sample:SEGD, eyeGene, ACMG2nd, everything()) %>%
     filter(PopAF_MGRB < 0.05, PopAF1k < 0.05) %>% 
-    arrange(eyeGene, ACMG2nd)
+    arrange(eyeGene, ACMG2nd) %>% 
+    left_join(., panelGene, by = c("eyeGene" = "ref_gene")) %>% 
+    unite("temp_panel_class", panel_class, GenePhenotypeCategory, sep = "|", remove = TRUE, na.rm = TRUE) %>%
+    rename(panel_class = temp_panel_class) %>% 
+    select(Sample:SEGD, eyeGene, panel_class, everything())
   clinsv_cds <- filter(clinsv, SVtype == "BND" | GeneFeature != "intron") %>% 
     select(Genes, GT) %>% separate_rows(Genes, sep=",") %>% unique() %>% 
     separate(GT, c("GT1", "GT2"), sep = "\\/", convert = TRUE) %>% 
