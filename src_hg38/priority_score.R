@@ -221,8 +221,8 @@ ps_df <-  left_join(ps_df_crossmap, squirls_pangolin_annotation, by="variantkey"
                                           TRUE ~ 0)) %>% 
   mutate(splice_score = pmin(8, (spliceai_rank + temp_genesplicer + temp_maxentscan_diff + temp_dpsi_score + temp_dbscSNV_score + temp_squirl_score + 
                                    temp_pangolin_score + ifelse(pmaxaf < 0.02 & !is.na(branchpoint_prob), 2, 0) + ifelse(pmaxaf < 0.02 & !is.na(labranchor_score), 2, 0) )) ) %>% 
-  mutate(priority_score = PrScore_intervar + ifelse(pmaxaf < 0.03, clinvar_hgmd_score, 0) +  
-           ifelse(PVS1 == 1 | pmaxaf >= 0.01 | PrScore_intervar > 6, 0, truncating_vep*6) +
+  mutate(priority_score = ifelse(clinvar_hgmd_score == 6 & PrScore_intervar < 0, 6, PrScore_intervar + clinvar_hgmd_score) +  #makes sure common path has at least 6 pts, previously "PrScore_intervar + ifelse(pmaxaf < 0.03, clinvar_hgmd_score, 0) +"
+           ifelse(PVS1 == 1 | pmaxaf >= 0.01 | PrScore_intervar > 6, 0, truncating_vep*6) + 
            pmin(8, ifelse(PVS1 == 1 | truncating_vep == 1 | pmaxaf >= 0.03, 0, splice_score) + ifelse(pmaxaf >= 0.02, 0, pmin(6, insilico_score)) )) %>% 
   separate(amino_acids, c("temp_ref", "temp_alt"), sep = "/", remove = FALSE) %>%
   mutate(
